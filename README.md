@@ -30,24 +30,7 @@ python lihkg.py
 - Image not showing in post
 - URLs in post cannot be clicked
 
-<!-- ## 求助養 -->
-<!-- 樓豬需要飼料，請餵食金錢，讓金錢的味道鞭策樓豬快手修補以上問題。 -->
+### 加速開發
+買份沙爹牛畀樓豬，用金錢的味道鞭策樓豬快手修補以上問題。
 
-<!-- http://asciiqr.com/ -->
-<!-- PayMe: -->
-<!-- ```
-█▀▀▀▀▀█ ███ ▀▄▀▀█ █▀▀▀▀▀█
-█ ███ █ █▄▀█ ▄▀ ▄ █ ███ █
-█ ▀▀▀ █ ▄  ▄▄ ▀▀█ █ ▀▀▀ █
-▀▀▀▀▀▀▀ ▀▄▀ █ █ █ ▀▀▀▀▀▀▀
-▀█▄ ▀▀▀  ▄▄▀▄▀█▄▄  ▀▄█▀█▀
-█▀▀▄                 ▀▀█▄ 
-██ ▄  To to created  ▀▀█▀
-  █▄                  █▄ 
-▀▀    ▀▀▄ ▀▀▄▀▀▄█▀▀▀█▀█  
-█▀▀▀▀▀█ ▄█▄█▀█▀ █ ▀ ██▄ ▄
-█ ███ █ ▀▀█ ▀█▄▄▀███▀▄█▄█
-█ ▀▀▀ █ ▄ █ ▄ ▄▀▀███▄▄▄█ 
-▀▀▀▀▀▀▀ ▀ ▀▀ ▀▀▀ ▀▀   ▀▀▀
-```
- -->
+<a href="https://www.buymeacoffee.com/mercyReleaser"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a Satay beef noodle&emoji=🍜&slug=mercyReleaser&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" /></a>
