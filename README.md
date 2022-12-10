@@ -2,16 +2,14 @@
 IT狗有福了，【Terminal版】香港最大頂級`扮工Mode`不正式地上線了！
 
 ## 安裝
-### Windows
-### Linux
-### Mac OS
+```bash
+pip install https://github.com/NewJerseyStyle/LIHKGApp/releases/download/v0.1/lihkg-0.1-py2.py3-none-any.whl
+```
 
-## Usage
-Rich can do a pretty *decent* job of rendering markdown.
-
-1. There is `lefepanel` for list of thread
-2. Click `Button(Read)` open thread content
-3. This is `rightpanel` showing the content
+## Development installation
+```bash
+pip install -r requirements.txt
+````
 
 ## Knwon issues
 - Only latest is showing in list of thread
@@ -21,13 +19,12 @@ Rich can do a pretty *decent* job of rendering markdown.
 - Image not showing in post
 - URLs in post cannot be clicked
 
-## 求助養
-樓豬需要飼料，請餵食金錢，讓金錢的味道鞭策樓豬快手修補以上問題。
+<!-- ## 求助養 -->
+<!-- 樓豬需要飼料，請餵食金錢，讓金錢的味道鞭策樓豬快手修補以上問題。 -->
 
 <!-- http://asciiqr.com/ -->
-PayMe:
-```
-To to created
+<!-- PayMe: -->
+<!-- ```
 █▀▀▀▀▀█ ███ ▀▄▀▀█ █▀▀▀▀▀█
 █ ███ █ █▄▀█ ▄▀ ▄ █ ███ █
 █ ▀▀▀ █ ▄  ▄▄ ▀▀█ █ ▀▀▀ █
@@ -42,3 +39,4 @@ To to created
 █ ▀▀▀ █ ▄ █ ▄ ▄▀▀███▄▄▄█ 
 ▀▀▀▀▀▀▀ ▀ ▀▀ ▀▀▀ ▀▀   ▀▀▀
 ```
+ -->
