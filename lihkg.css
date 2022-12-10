@@ -1,0 +1,23 @@
+Screen {
+    layout: horizontal;
+}
+
+Post {
+    margin: 1 0;
+}
+
+Button {
+    background: $boost;
+    width: 100%;
+    height: auto;
+    border: none;
+}
+
+
+#leftpanel {
+    width: 30%;
+}
+
+#rightpanel {
+    width: 70%;
+}
