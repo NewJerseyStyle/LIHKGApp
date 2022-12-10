@@ -35,25 +35,54 @@ Rich can do a pretty *decent* job of rendering markdown.
 捐助鏈接：
 ```python
 '''
-█▀▀▀▀▀█ ███ ▀▄▀▀█ █▀▀▀▀▀█
-█ ███ █ █▄▀█ ▄▀ ▄ █ ███ █
-█ ▀▀▀ █ ▄  ▄▄ ▀▀█ █ ▀▀▀ █
-▀▀▀▀▀▀▀ ▀▄▀ █ █ █ ▀▀▀▀▀▀▀
-▀█▄ ▀▀▀  ▄▄▀▄▀█▄▄  ▀▄█▀█▀
-█▀▀▄▀▄▀▀█ ▄█▀█▀▀▀▀▄▀▀▀█▄ 
-██ ▄▀ ▀▀█ ▀ ▀█▄█ ▀▀ ▄▀▀█▀
-  █▄▄▀▀▀▀██ ▄ ▄▀█▀▀▀ ██▄ 
-▀▀    ▀▀▄ ▀▀▄▀▀▄█▀▀▀█▀█  
-█▀▀▀▀▀█ ▄█▄█▀█▀ █ ▀ ██▄ ▄
-█ ███ █ ▀▀█ ▀█▄▄▀███▀▄█▄█
-█ ▀▀▀ █ ▄ █ ▄ ▄▀▀███▄▄▄█ 
-▀▀▀▀▀▀▀ ▀ ▀▀ ▀▀▀ ▀▀   ▀▀▀
+█▀▀▀▀▀█ █  ▄▄▀▀▀▀ █▀▀▀▀▀█
+█ ███ █ ██▄ █ ▀ ▄ █ ███ █
+█ ▀▀▀ █ ▄██ ▀ ▀▀█ █ ▀▀▀ █
+▀▀▀▀▀▀▀ ▀ █▄▀▄▀▄█ ▀▀▀▀▀▀▀
+█▀▄▄██▀ ▄ ▀ ▀█▄█▄  █▄▀█▀▀
+█▀ █▄█▀ ▄█▀ ▄ ▄█▄█ ▀▄ █▄ 
+██▄█ █▀ ▄▄▄▀▄▀▀██▀▀ ▄▀▀  
+   ▄▄ ▀ ▄ ██▀█▀█▀▀▀▄ ▄▄▄ 
+▀▀▀▀ ▀▀▀█   ▀█▄ █▀▀▀█ ▀██
+█▀▀▀▀▀█ ▄▀▀ ▄ ▄ █ ▀ █▀█▄▄
+█ ███ █ ▀█▀▀▄▀▀ ▀██▀▀ ▀▄█
+█ ▀▀▀ █ ▄▄▄█▀█▀█▀▄▀█  ▄█ 
+▀▀▀▀▀▀▀ ▀ ▀ ▀▀   ▀ ▀  ▀▀▀
 '''
 ```
 """
+
 README = Markdown(MARKDOWN)
 TEMP_PATH = tempfile.TemporaryDirectory()
 nest_asyncio.apply()
+
+CSS_STYLE = '''Screen {
+    layout: horizontal;
+}
+
+Post {
+    margin: 1 0;
+}
+
+Button {
+    background: $boost;
+    width: 100%;
+    height: auto;
+    border: none;
+}
+
+
+#leftpanel {
+    width: 30%;
+}
+
+#rightpanel {
+    width: 70%;
+}
+'''
+
+with open(f'{TEMP_PATH.name}/lihkg.css', 'w') as f:
+	f.write(CSS_STYLE)
 
 if platform.system() == 'Windows':
 	input('Set "MS Gothic" as your font in CMD [如果你看到這句文字就可以按enter繼續了]')
@@ -75,7 +104,7 @@ class Post(Static):
 class LIHKGApp(App):
 	"""A Textual app to manage stopwatches."""
 
-	CSS_PATH = "lihkg.css"
+	CSS_PATH = f"{TEMP_PATH.name}/lihkg.css"
 
 	BINDINGS = [
 		("d", "toggle_dark", "Toggle dark mode"),
@@ -176,8 +205,6 @@ class LIHKGApp(App):
 				self.interception_thread(res,
 										 thread_id,
 										 page_num)))
-		# await page.goto(f'https://lihkg.com/thread/{thread_id}' +
-		# 				f'/page/{page_num}')
 		await page.goto(f'https://lihkg.com/thread/{thread_id}' +
 						f'/page/{page_num}',
 						{'waitUntil': 'networkidle2'})
