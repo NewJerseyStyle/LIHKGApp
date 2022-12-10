@@ -1,17 +1,26 @@
 # This is a Terminal App
-IT狗有福了，【Terminal版】香港最大頂級`扮工Mode`不正式地上線了！
+做`Python`開發嘅 IT狗有福了，【Terminal版】香港最大頂級`扮工Mode`不正式地上線了！
+
+![image](https://user-images.githubusercontent.com/22520563/206852067-ef16e7b9-551d-4cad-b7ab-e6cf294d8d17.png)
 
 ## 安裝
-### Windows
-### Linux
-### Mac OS
+```bash
+pip install https://github.com/NewJerseyStyle/LIHKGApp/releases/download/v0.1/lihkg-0.1-py2.py3-none-any.whl
+```
 
-## Usage
-Rich can do a pretty *decent* job of rendering markdown.
+## 運行
+```bash
+python -m lihkg
+```
 
-1. There is `lefepanel` for list of thread
-2. Click `Button(Read)` open thread content
-3. This is `rightpanel` showing the content
+## Development
+### Installation
+```bash
+git clone https://github.com/NewJerseyStyle/LIHKGApp.git
+cd LIHKGApp
+pip install -r requirements.txt
+python lihkg.py
+```
 
 ## Knwon issues
 - Only latest is showing in list of thread
@@ -21,13 +30,12 @@ Rich can do a pretty *decent* job of rendering markdown.
 - Image not showing in post
 - URLs in post cannot be clicked
 
-## 求助養
-樓豬需要飼料，請餵食金錢，讓金錢的味道鞭策樓豬快手修補以上問題。
+<!-- ## 求助養 -->
+<!-- 樓豬需要飼料，請餵食金錢，讓金錢的味道鞭策樓豬快手修補以上問題。 -->
 
 <!-- http://asciiqr.com/ -->
-PayMe:
-```
-To to created
+<!-- PayMe: -->
+<!-- ```
 █▀▀▀▀▀█ ███ ▀▄▀▀█ █▀▀▀▀▀█
 █ ███ █ █▄▀█ ▄▀ ▄ █ ███ █
 █ ▀▀▀ █ ▄  ▄▄ ▀▀█ █ ▀▀▀ █
@@ -42,3 +50,4 @@ To to created
 █ ▀▀▀ █ ▄ █ ▄ ▄▀▀███▄▄▄█ 
 ▀▀▀▀▀▀▀ ▀ ▀▀ ▀▀▀ ▀▀   ▀▀▀
 ```
+ -->
