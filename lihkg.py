@@ -3,6 +3,7 @@ import json
 import asyncio
 import tempfile
 import platform
+import webbrowser
 from time import sleep
 from datetime import datetime
 
@@ -35,19 +36,21 @@ Rich can do a pretty *decent* job of rendering markdown.
 捐助鏈接：
 ```python
 '''
-█▀▀▀▀▀█ █  ▄▄▀▀▀▀ █▀▀▀▀▀█
-█ ███ █ ██▄ █ ▀ ▄ █ ███ █
-█ ▀▀▀ █ ▄██ ▀ ▀▀█ █ ▀▀▀ █
-▀▀▀▀▀▀▀ ▀ █▄▀▄▀▄█ ▀▀▀▀▀▀▀
-█▀▄▄██▀ ▄ ▀ ▀█▄█▄  █▄▀█▀▀
-█▀ █▄█▀ ▄█▀ ▄ ▄█▄█ ▀▄ █▄ 
-██▄█ █▀ ▄▄▄▀▄▀▀██▀▀ ▄▀▀  
-   ▄▄ ▀ ▄ ██▀█▀█▀▀▀▄ ▄▄▄ 
-▀▀▀▀ ▀▀▀█   ▀█▄ █▀▀▀█ ▀██
-█▀▀▀▀▀█ ▄▀▀ ▄ ▄ █ ▀ █▀█▄▄
-█ ███ █ ▀█▀▀▄▀▀ ▀██▀▀ ▀▄█
-█ ▀▀▀ █ ▄▄▄█▀█▀█▀▄▀█  ▄█ 
-▀▀▀▀▀▀▀ ▀ ▀ ▀▀   ▀ ▀  ▀▀▀
+   ▄▄▄▄▄▄▄  ▄  ▄▄▄▄  ▄▄  ▄▄▄▄▄▄▄  
+   █ ▄▄▄ █ █▄▄██ ▀▀ █▀▄▄ █ ▄▄▄ █  
+   █ ███ █ ▄▀▀▀ ▄██▄ █▀  █ ███ █  
+   █▄▄▄▄▄█ █▀▄▀▄▀▄▀▄ █▀█ █▄▄▄▄▄█  
+   ▄▄ ▄  ▄▄▀▀▄ ▀▄█ ▀▀█▀▀ ▄▄▄ ▄▄   
+    █████▄ ▄▄█▀ █▄▀█▄ ▄▀▀▀  █▄▄▀  
+   ▀ █▀▄▀▄ ▄   ▄█ █ ▄ ▄▄██▀▀▄▀█▄  
+   ▀█▀ ▄▀▄▄▀▀█▀█▄▀  ▀▄▀█▄▄▀ ▄▄▄▄  
+   ▀▄ ██▄▄▀ ▄▀▄▀▀▀  █▀▄▄▄ ▄ ▀ █   
+   ▄ ▀▀▄▄▄██    ▀▀ ██    ▀█ ▀ ▄█  
+   ▄ █▀  ▄▀ ▀▄█▄▄█ ▀▀▀ ▄▄█▄▄ ▄▀▀  
+   ▄▄▄▄▄▄▄ █▄ ██▀█ █  ▀█ ▄ █ ▀█▀  
+   █ ▄▄▄ █  ▄▀█▀▀█▀█▄█ █▄▄▄█▀▀▀▀  
+   █ ███ █ ▀▀▀█ █▄    █  ▀ ███▀▄  
+   █▄▄▄▄▄█ ██▄▀▄▄ █▀█▀▀█▄▀▄█  █   
 '''
 ```
 """
@@ -56,39 +59,10 @@ README = Markdown(MARKDOWN)
 TEMP_PATH = tempfile.TemporaryDirectory()
 nest_asyncio.apply()
 
-CSS_STYLE = '''Screen {
-    layout: horizontal;
-}
-
-Post {
-    margin: 1 0;
-}
-
-Button {
-    background: $boost;
-    width: 100%;
-    height: auto;
-    border: none;
-}
-
-
-#leftpanel {
-    width: 30%;
-}
-
-#rightpanel {
-    width: 70%;
-}
-'''
-
-with open(f'{TEMP_PATH.name}/lihkg.css', 'w') as f:
-	f.write(CSS_STYLE)
-
 if platform.system() == 'Windows':
 	input('Set "MS Gothic" as your font in CMD [如果你看到這句文字就可以按enter繼續了]')
 
 class Post(Static):
-	"""A stopwatch widget."""
 	def __init__(self, data):
 		super(Post, self).__init__()
 		self.thread_id = data["thread_id"]
@@ -102,14 +76,40 @@ class Post(Static):
 
 
 class LIHKGApp(App):
-	"""A Textual app to manage stopwatches."""
+	"""A Textual app to view LIHKG."""
 
-	CSS_PATH = f"{TEMP_PATH.name}/lihkg.css"
+	DEFAULT_CSS = '''
+	Screen {
+	    layout: horizontal;
+	}
+
+	Post {
+	    margin: 1 0;
+	}
+
+	Button {
+	    background: $boost;
+	    width: 100%;
+	    height: auto;
+	    border: none;
+	}
+
+
+	#leftpanel {
+	    width: 30%;
+	}
+
+	#rightpanel {
+	    width: 70%;
+	}
+	'''
 
 	BINDINGS = [
 		("d", "toggle_dark", "Toggle dark mode"),
 		("q", "quit", "Quit LIHKGApp"),
-		# ("a", "alternate_screen", "Full page"),
+		# ("v", "view_full_screen", "View full page"),
+		("n", "download_next_page", "load Next page"),
+		("m", "download_more_post", "load More post"),
 	]
 
 	def on_mount(self):
@@ -122,6 +122,7 @@ class LIHKGApp(App):
 		a = re.compile(r'" data-sr-url=".*?">')
 		i = re.compile(r'" data-thumbnail-src=.*? />')
 		e = re.compile(r'" class=.*? />')
+		s = re.compile(r'<span.*? >')
 		post_md = ''
 		for post in json_dict['response']['item_data']:
 			post_md += f'\#{post["msg_num"]} <{post["user_nickname"]}> '
@@ -130,8 +131,8 @@ class LIHKGApp(App):
 			msg = msg.replace('<strong>', '*')
 			msg = msg.replace('</strong>', '*')
 			msg = msg.replace('<br />', '\n\n')
-			msg = msg.replace('<span class="', '[red]')
-			msg = msg.replace('</span>', '[/]')
+			msg = s.sub('`', msg)
+			msg = msg.replace('</span>', '`')
 			msg = i.sub(')', msg)
 			msg = e.sub(')', msg)
 			msg = msg.replace('<img src="', '> ![](')
@@ -151,8 +152,9 @@ class LIHKGApp(App):
 		thread_id = event.button.name
 		post_display = self.query_one("#post")
 		if button_id == "read":
+			self.loaded_page = 1
 			asyncio.get_event_loop().run_until_complete(
-				self.get_post_content(thread_id, 1))
+				self.get_post_content(thread_id, self.loaded_page))
 			self.post_md = self.parse_post_response(self.post_dict)
 			post_display.update(Markdown(self.post_md))
 
@@ -171,6 +173,35 @@ class LIHKGApp(App):
 	def action_toggle_dark(self) -> None:
 		"""An action to toggle dark mode."""
 		self.dark = not self.dark
+
+	def action_download_next_page(self) -> None:
+		if self.loaded_page < self.post_dict['total_page']:
+			self.post_md += f' Page {self.loaded_page} End'
+			self.post_md += '\n\n---\n\n'
+			asyncio.get_event_loop().run_until_complete(
+				self.get_post_content(thread_id, self.loaded_page))
+			self.post_md += self.parse_post_response(self.post_dict)
+			post_display.update(Markdown(self.post_md))
+			self.loaded_page += 1
+
+	def action_download_more_post(self) -> None:
+		asyncio.get_event_loop().run_until_complete(
+			self.get_post_list())
+		if self.data['error_code'] == 100:
+			self.query_one("#leftpanel").mount(
+				Static(self.data['error_message']))
+		else:
+			for json_dict in self.data['response']['items']:
+				self.add_post(json_dict)
+
+	def webbrowser_open_url(self, url):
+		webbrowser.open(url)
+
+	# def on_container_mousescrolldown(self, message):
+	# 	post_display = self.query_one("#post")
+	# 	if (message.y - post_display.styles.height < self.styles.height
+	# 		and self.loaded_page < self.post_dict['total_page']):
+	# 		self.action_download_nextpage()
 
 	async def get_post_list(self, cat='5'):
 		browser = await launch(headless=True,
