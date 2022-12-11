@@ -1,7 +1,7 @@
 # This is a Terminal App
 做`Python`開發嘅 IT狗有福了，【Terminal版】香港最大頂級`扮工Mode`不正式地上線了！
 
-
+![Capture](https://user-images.githubusercontent.com/22520563/206911572-3a93e7f2-60da-4d5a-be24-a8035b8baff9.PNG)
 
 ## 安裝
 ```bash
