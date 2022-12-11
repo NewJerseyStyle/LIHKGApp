@@ -33,21 +33,21 @@ Rich can do a pretty *decent* job of rendering markdown.
 捐助鏈接：
 ```python
 '''
-   ▄▄▄▄▄▄▄  ▄  ▄▄▄▄  ▄▄  ▄▄▄▄▄▄▄  
-   █ ▄▄▄ █ █▄▄██ ▀▀ █▀▄▄ █ ▄▄▄ █  
-   █ ███ █ ▄▀▀▀ ▄██▄ █▀  █ ███ █  
-   █▄▄▄▄▄█ █▀▄▀▄▀▄▀▄ █▀█ █▄▄▄▄▄█  
-   ▄▄ ▄  ▄▄▀▀▄ ▀▄█ ▀▀█▀▀ ▄▄▄ ▄▄   
-    █████▄ ▄▄█▀ █▄▀█▄ ▄▀▀▀  █▄▄▀  
-   ▀ █▀▄▀▄ ▄   ▄█ █ ▄ ▄▄██▀▀▄▀█▄  
-   ▀█▀ ▄▀▄▄▀▀█▀█▄▀  ▀▄▀█▄▄▀ ▄▄▄▄  
-   ▀▄ ██▄▄▀ ▄▀▄▀▀▀  █▀▄▄▄ ▄ ▀ █   
-   ▄ ▀▀▄▄▄██    ▀▀ ██    ▀█ ▀ ▄█  
-   ▄ █▀  ▄▀ ▀▄█▄▄█ ▀▀▀ ▄▄█▄▄ ▄▀▀  
-   ▄▄▄▄▄▄▄ █▄ ██▀█ █  ▀█ ▄ █ ▀█▀  
-   █ ▄▄▄ █  ▄▀█▀▀█▀█▄█ █▄▄▄█▀▀▀▀  
-   █ ███ █ ▀▀▀█ █▄    █  ▀ ███▀▄  
-   █▄▄▄▄▄█ ██▄▀▄▄ █▀█▀▀█▄▀▄█  █   
+	▄▄▄▄▄▄▄  ▄  ▄▄▄▄  ▄▄  ▄▄▄▄▄▄▄  
+	█ ▄▄▄ █ █▄▄██ ▀▀ █▀▄▄ █ ▄▄▄ █  
+	█ ███ █ ▄▀▀▀ ▄██▄ █▀  █ ███ █  
+	█▄▄▄▄▄█ █▀▄▀▄▀▄▀▄ █▀█ █▄▄▄▄▄█  
+	▄▄ ▄  ▄▄▀▀▄ ▀▄█ ▀▀█▀▀ ▄▄▄ ▄▄   
+	 █████▄ ▄▄█▀ █▄▀█▄ ▄▀▀▀  █▄▄▀  
+	▀ █▀▄▀▄ ▄   ▄█ █ ▄ ▄▄██▀▀▄▀█▄  
+	▀█▀ ▄▀▄▄▀▀█▀█▄▀  ▀▄▀█▄▄▀ ▄▄▄▄  
+	▀▄ ██▄▄▀ ▄▀▄▀▀▀  █▀▄▄▄ ▄ ▀ █   
+	▄ ▀▀▄▄▄██    ▀▀ ██    ▀█ ▀ ▄█  
+	▄ █▀  ▄▀ ▀▄█▄▄█ ▀▀▀ ▄▄█▄▄ ▄▀▀  
+	▄▄▄▄▄▄▄ █▄ ██▀█ █  ▀█ ▄ █ ▀█▀  
+	█ ▄▄▄ █  ▄▀█▀▀█▀█▄█ █▄▄▄█▀▀▀▀  
+	█ ███ █ ▀▀▀█ █▄    █  ▀ ███▀▄  
+	█▄▄▄▄▄█ ██▄▀▄▄ █▀█▀▀█▄▀▄█  █   
 '''
 ```
 """
@@ -75,29 +75,28 @@ class Post(Static):
 class LIHKGApp(App):
 	"""A Textual app to view LIHKG."""
 
-	DEFAULT_CSS = '''
+	CSS = '''
 	Screen {
-	    layout: horizontal;
+		 layout: horizontal;
 	}
 
 	Post {
-	    margin: 1 0;
+		 margin: 1 0;
 	}
 
 	Button {
-	    background: $boost;
-	    width: 100%;
-	    height: auto;
-	    border: none;
+		 background: $boost;
+		 width: 100%;
+		 height: auto;
+		 border: none;
 	}
 
-
 	#leftpanel {
-	    width: 30%;
+		 width: 30%;
 	}
 
 	#rightpanel {
-	    width: 70%;
+		 width: 70%;
 	}
 	'''
 
@@ -110,6 +109,7 @@ class LIHKGApp(App):
 	]
 
 	def on_mount(self):
+		self.loaded_page = 0
 		asyncio.get_event_loop().run_until_complete(
 			self.get_post_list())
 		for json_dict in self.data['response']['items']:
@@ -172,7 +172,8 @@ class LIHKGApp(App):
 		self.dark = not self.dark
 
 	def action_download_next_page(self) -> None:
-		if self.loaded_page < self.post_dict['total_page']:
+		if (self.loaded_page > 0 and
+				self.loaded_page < self.post_dict['total_page']):
 			self.post_md += f' Page {self.loaded_page} End'
 			self.post_md += '\n\n---\n\n'
 			asyncio.get_event_loop().run_until_complete(
