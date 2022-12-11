@@ -57,7 +57,7 @@ TEMP_PATH = tempfile.TemporaryDirectory()
 nest_asyncio.apply()
 
 if platform.system() == 'Windows':
-	input('Set "MS Gothic" as your font in CMD [如果你看到這句文字就可以按enter繼續了]')
+	input('Set "MS Gothic" as your font in CMD [如果你看到這句文字就可以按enter繼續了]\n\n')
 
 class Post(Static):
 	def __init__(self, data):
@@ -110,6 +110,7 @@ class LIHKGApp(App):
 
 	def on_mount(self):
 		self.loaded_page = 0
+		self.total_page = 0
 		asyncio.get_event_loop().run_until_complete(
 			self.get_post_list())
 		for json_dict in self.data['response']['items']:
@@ -119,7 +120,7 @@ class LIHKGApp(App):
 		a = re.compile(r'" data-sr-url=".*?">')
 		i = re.compile(r'" data-thumbnail-src=.*? />')
 		e = re.compile(r'" class=.*? />')
-		s = re.compile(r'<span.*? >')
+		s = re.compile(r'<span.*?>')
 		post_md = ''
 		for post in json_dict['response']['item_data']:
 			post_md += f'\#{post["msg_num"]} <{post["user_nickname"]}> '
@@ -130,9 +131,9 @@ class LIHKGApp(App):
 			msg = msg.replace('<br />', '\n\n')
 			msg = s.sub('`', msg)
 			msg = msg.replace('</span>', '`')
-			msg = i.sub(')', msg)
-			msg = e.sub(')', msg)
-			msg = msg.replace('<img src="', '> ![](')
+			msg = i.sub(')\n\n', msg)
+			msg = e.sub(')\n\n', msg)
+			msg = msg.replace('<img src="', '\n\n> ![](')
 			msg = msg.replace('<a href="', '[')
 			msg = a.sub('](', msg)
 			msg = msg.replace('</a>', ')')
@@ -146,12 +147,13 @@ class LIHKGApp(App):
 	def on_button_pressed(self, event: Button.Pressed) -> None:
 		"""Event handler called when a button is pressed."""
 		button_id = event.button.id
-		thread_id = event.button.name
+		self.thread_id = event.button.name
 		post_display = self.query_one("#post")
 		if button_id == "read":
 			self.loaded_page = 1
 			asyncio.get_event_loop().run_until_complete(
-				self.get_post_content(thread_id, self.loaded_page))
+				self.get_post_content(self.thread_id, self.loaded_page))
+			self.total_page = self.post_dict['response']['total_page']
 			self.post_md = self.parse_post_response(self.post_dict)
 			post_display.update(Markdown(self.post_md))
 
@@ -172,20 +174,20 @@ class LIHKGApp(App):
 		self.dark = not self.dark
 
 	def action_download_next_page(self) -> None:
-		if (self.loaded_page > 0 and
-				self.loaded_page < self.post_dict['total_page']):
+		if self.loaded_page < self.total_page:
 			self.post_md += f' Page {self.loaded_page} End'
 			self.post_md += '\n\n---\n\n'
-			asyncio.get_event_loop().run_until_complete(
-				self.get_post_content(thread_id, self.loaded_page))
-			self.post_md += self.parse_post_response(self.post_dict)
-			post_display.update(Markdown(self.post_md))
 			self.loaded_page += 1
+			asyncio.get_event_loop().run_until_complete(
+				self.get_post_content(self.thread_id, self.loaded_page))
+			self.post_md += self.parse_post_response(self.post_dict)
+			self.query_one("#post").update(Markdown(self.post_md))
 
 	def action_download_more_post(self) -> None:
 		asyncio.get_event_loop().run_until_complete(
 			self.get_post_list())
-		if self.data['error_code'] == 100:
+		if ('error_code' in self.data or
+				'error_message' in self.data):
 			self.query_one("#leftpanel").mount(
 				Static(self.data['error_message']))
 		else:
@@ -198,7 +200,7 @@ class LIHKGApp(App):
 	# def on_container_mousescrolldown(self, message):
 	# 	post_display = self.query_one("#post")
 	# 	if (message.y - post_display.styles.height < self.styles.height
-	# 		and self.loaded_page < self.post_dict['total_page']):
+	# 		and self.loaded_page < self.total_page):
 	# 		self.action_download_nextpage()
 
 	async def get_post_list(self, cat='5'):
