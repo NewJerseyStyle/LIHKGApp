@@ -23,10 +23,7 @@ python lihkg.py
 ```
 
 ## Knwon issues
-- Only latest is showing in list of thread
 - Only threads in category 5 is showing
-- Only one page of threads is showing
-- Only one page in threads is showing
 - Image not showing in post
 - URLs in post cannot be clicked
 
