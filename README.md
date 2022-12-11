@@ -18,6 +18,7 @@ python -m lihkg
 ```bash
 git clone https://github.com/NewJerseyStyle/LIHKGApp.git
 cd LIHKGApp
+git checkout develop
 pip install -r requirements.txt
 python lihkg.py
 ```
