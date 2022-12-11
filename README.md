@@ -1,11 +1,12 @@
 # This is a Terminal App
 做`Python`開發嘅 IT狗有福了，【Terminal版】香港最大頂級`扮工Mode`不正式地上線了！
 
-![image](https://user-images.githubusercontent.com/22520563/206852067-ef16e7b9-551d-4cad-b7ab-e6cf294d8d17.png)
+![Capture](https://user-images.githubusercontent.com/22520563/206911572-3a93e7f2-60da-4d5a-be24-a8035b8baff9.PNG)
 
 ## 安裝
+> :warning: `Python >= 3.7` 需要
 ```bash
-pip install https://github.com/NewJerseyStyle/LIHKGApp/releases/download/v0.1/lihkg-0.1-py2.py3-none-any.whl
+pip install https://github.com/NewJerseyStyle/LIHKGApp/releases/download/v0.2/lihkg-0.2-py2.py3-none-any.whl
 ```
 
 ## 運行
@@ -18,15 +19,19 @@ python -m lihkg
 ```bash
 git clone https://github.com/NewJerseyStyle/LIHKGApp.git
 cd LIHKGApp
+git checkout develop
 pip install -r requirements.txt
 python lihkg.py
 ```
 
+### Build release
+```bash
+python setup.py bdist_wheel --universal
+```
+
 ## Knwon issues
-- Only latest is showing in list of thread
 - Only threads in category 5 is showing
-- Only one page of threads is showing
-- Only one page in threads is showing
+- Runs on single thread that UI freeze during network requests
 - Image not showing in post
 - URLs in post cannot be clicked
 

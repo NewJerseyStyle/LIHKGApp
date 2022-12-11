@@ -3,6 +3,7 @@ import json
 import asyncio
 import tempfile
 import platform
+import webbrowser
 from time import sleep
 from datetime import datetime
 
@@ -22,10 +23,7 @@ MARKDOWN = """
 Rich can do a pretty *decent* job of rendering markdown.
 
 ## Knwon issues
-- Only latest is showing in list of thread
 - Only threads in category 5 is showing
-- Only one page of threads is showing
-- Only one page in threads is showing
 - Image not showing in post
 - URLs in post cannot be clicked
 
@@ -35,31 +33,33 @@ Rich can do a pretty *decent* job of rendering markdown.
 捐助鏈接：
 ```python
 '''
-█▀▀▀▀▀█ ███ ▀▄▀▀█ █▀▀▀▀▀█
-█ ███ █ █▄▀█ ▄▀ ▄ █ ███ █
-█ ▀▀▀ █ ▄  ▄▄ ▀▀█ █ ▀▀▀ █
-▀▀▀▀▀▀▀ ▀▄▀ █ █ █ ▀▀▀▀▀▀▀
-▀█▄ ▀▀▀  ▄▄▀▄▀█▄▄  ▀▄█▀█▀
-█▀▀▄▀▄▀▀█ ▄█▀█▀▀▀▀▄▀▀▀█▄ 
-██ ▄▀ ▀▀█ ▀ ▀█▄█ ▀▀ ▄▀▀█▀
-  █▄▄▀▀▀▀██ ▄ ▄▀█▀▀▀ ██▄ 
-▀▀    ▀▀▄ ▀▀▄▀▀▄█▀▀▀█▀█  
-█▀▀▀▀▀█ ▄█▄█▀█▀ █ ▀ ██▄ ▄
-█ ███ █ ▀▀█ ▀█▄▄▀███▀▄█▄█
-█ ▀▀▀ █ ▄ █ ▄ ▄▀▀███▄▄▄█ 
-▀▀▀▀▀▀▀ ▀ ▀▀ ▀▀▀ ▀▀   ▀▀▀
+	▄▄▄▄▄▄▄  ▄  ▄▄▄▄  ▄▄  ▄▄▄▄▄▄▄  
+	█ ▄▄▄ █ █▄▄██ ▀▀ █▀▄▄ █ ▄▄▄ █  
+	█ ███ █ ▄▀▀▀ ▄██▄ █▀  █ ███ █  
+	█▄▄▄▄▄█ █▀▄▀▄▀▄▀▄ █▀█ █▄▄▄▄▄█  
+	▄▄ ▄  ▄▄▀▀▄ ▀▄█ ▀▀█▀▀ ▄▄▄ ▄▄   
+	 █████▄ ▄▄█▀ █▄▀█▄ ▄▀▀▀  █▄▄▀  
+	▀ █▀▄▀▄ ▄   ▄█ █ ▄ ▄▄██▀▀▄▀█▄  
+	▀█▀ ▄▀▄▄▀▀█▀█▄▀  ▀▄▀█▄▄▀ ▄▄▄▄  
+	▀▄ ██▄▄▀ ▄▀▄▀▀▀  █▀▄▄▄ ▄ ▀ █   
+	▄ ▀▀▄▄▄██    ▀▀ ██    ▀█ ▀ ▄█  
+	▄ █▀  ▄▀ ▀▄█▄▄█ ▀▀▀ ▄▄█▄▄ ▄▀▀  
+	▄▄▄▄▄▄▄ █▄ ██▀█ █  ▀█ ▄ █ ▀█▀  
+	█ ▄▄▄ █  ▄▀█▀▀█▀█▄█ █▄▄▄█▀▀▀▀  
+	█ ███ █ ▀▀▀█ █▄    █  ▀ ███▀▄  
+	█▄▄▄▄▄█ ██▄▀▄▄ █▀█▀▀█▄▀▄█  █   
 '''
 ```
 """
+
 README = Markdown(MARKDOWN)
 TEMP_PATH = tempfile.TemporaryDirectory()
 nest_asyncio.apply()
 
 if platform.system() == 'Windows':
-	input('Set "MS Gothic" as your font in CMD [如果你看到這句文字就可以按enter繼續了]')
+	input('Set "MS Gothic" as your font in CMD [如果你看到這句文字就可以按enter繼續了]\n\n')
 
 class Post(Static):
-	"""A stopwatch widget."""
 	def __init__(self, data):
 		super(Post, self).__init__()
 		self.thread_id = data["thread_id"]
@@ -73,17 +73,44 @@ class Post(Static):
 
 
 class LIHKGApp(App):
-	"""A Textual app to manage stopwatches."""
+	"""A Textual app to view LIHKG."""
 
-	CSS_PATH = "lihkg.css"
+	CSS = '''
+	Screen {
+		 layout: horizontal;
+	}
+
+	Post {
+		 margin: 1 0;
+	}
+
+	Button {
+		 background: $boost;
+		 width: 100%;
+		 height: auto;
+		 border: none;
+	}
+
+	#leftpanel {
+		 width: 30%;
+	}
+
+	#rightpanel {
+		 width: 70%;
+	}
+	'''
 
 	BINDINGS = [
 		("d", "toggle_dark", "Toggle dark mode"),
 		("q", "quit", "Quit LIHKGApp"),
-		# ("a", "alternate_screen", "Full page"),
+		# ("v", "view_full_screen", "View full page"),
+		("n", "download_next_page", "load Next page"),
+		("m", "download_more_post", "load More post"),
 	]
 
 	def on_mount(self):
+		self.loaded_page = 0
+		self.total_page = 0
 		asyncio.get_event_loop().run_until_complete(
 			self.get_post_list())
 		for json_dict in self.data['response']['items']:
@@ -93,6 +120,7 @@ class LIHKGApp(App):
 		a = re.compile(r'" data-sr-url=".*?">')
 		i = re.compile(r'" data-thumbnail-src=.*? />')
 		e = re.compile(r'" class=.*? />')
+		s = re.compile(r'<span.*?>')
 		post_md = ''
 		for post in json_dict['response']['item_data']:
 			post_md += f'\#{post["msg_num"]} <{post["user_nickname"]}> '
@@ -101,11 +129,11 @@ class LIHKGApp(App):
 			msg = msg.replace('<strong>', '*')
 			msg = msg.replace('</strong>', '*')
 			msg = msg.replace('<br />', '\n\n')
-			msg = msg.replace('<span class="', '[red]')
-			msg = msg.replace('</span>', '[/]')
-			msg = i.sub(')', msg)
-			msg = e.sub(')', msg)
-			msg = msg.replace('<img src="', '> ![](')
+			msg = s.sub('`', msg)
+			msg = msg.replace('</span>', '`')
+			msg = i.sub(')\n\n', msg)
+			msg = e.sub(')\n\n', msg)
+			msg = msg.replace('<img src="', '\n\n> ![](')
 			msg = msg.replace('<a href="', '[')
 			msg = a.sub('](', msg)
 			msg = msg.replace('</a>', ')')
@@ -119,11 +147,13 @@ class LIHKGApp(App):
 	def on_button_pressed(self, event: Button.Pressed) -> None:
 		"""Event handler called when a button is pressed."""
 		button_id = event.button.id
-		thread_id = event.button.name
+		self.thread_id = event.button.name
 		post_display = self.query_one("#post")
 		if button_id == "read":
+			self.loaded_page = 1
 			asyncio.get_event_loop().run_until_complete(
-				self.get_post_content(thread_id, 1))
+				self.get_post_content(self.thread_id, self.loaded_page))
+			self.total_page = self.post_dict['response']['total_page']
 			self.post_md = self.parse_post_response(self.post_dict)
 			post_display.update(Markdown(self.post_md))
 
@@ -143,6 +173,36 @@ class LIHKGApp(App):
 		"""An action to toggle dark mode."""
 		self.dark = not self.dark
 
+	def action_download_next_page(self) -> None:
+		if self.loaded_page < self.total_page:
+			self.post_md += f' Page {self.loaded_page} End'
+			self.post_md += '\n\n---\n\n'
+			self.loaded_page += 1
+			asyncio.get_event_loop().run_until_complete(
+				self.get_post_content(self.thread_id, self.loaded_page))
+			self.post_md += self.parse_post_response(self.post_dict)
+			self.query_one("#post").update(Markdown(self.post_md))
+
+	def action_download_more_post(self) -> None:
+		asyncio.get_event_loop().run_until_complete(
+			self.get_post_list())
+		if ('error_code' in self.data or
+				'error_message' in self.data):
+			self.query_one("#leftpanel").mount(
+				Static(self.data['error_message']))
+		else:
+			for json_dict in self.data['response']['items']:
+				self.add_post(json_dict)
+
+	def webbrowser_open_url(self, url):
+		webbrowser.open(url)
+
+	# def on_container_mousescrolldown(self, message):
+	# 	post_display = self.query_one("#post")
+	# 	if (message.y - post_display.styles.height < self.styles.height
+	# 		and self.loaded_page < self.total_page):
+	# 		self.action_download_nextpage()
+
 	async def get_post_list(self, cat='5'):
 		browser = await launch(headless=True,
 								userDataDir=TEMP_PATH.name,
@@ -152,7 +212,6 @@ class LIHKGApp(App):
 		page.on('response',
 			lambda res: asyncio.ensure_future(
 				self.interception_cat(res, cat)))
-		# await page.goto(f'https://lihkg.com/category/{cat}')
 		await page.goto(f'https://lihkg.com/category/{cat}',
 						{'waitUntil': 'networkidle2'})
 		await page.close()
@@ -176,8 +235,6 @@ class LIHKGApp(App):
 				self.interception_thread(res,
 										 thread_id,
 										 page_num)))
-		# await page.goto(f'https://lihkg.com/thread/{thread_id}' +
-		# 				f'/page/{page_num}')
 		await page.goto(f'https://lihkg.com/thread/{thread_id}' +
 						f'/page/{page_num}',
 						{'waitUntil': 'networkidle2'})
