@@ -23,10 +23,7 @@ MARKDOWN = """
 Rich can do a pretty *decent* job of rendering markdown.
 
 ## Knwon issues
-- Only latest is showing in list of thread
 - Only threads in category 5 is showing
-- Only one page of threads is showing
-- Only one page in threads is showing
 - Image not showing in post
 - URLs in post cannot be clicked
 
@@ -212,7 +209,6 @@ class LIHKGApp(App):
 		page.on('response',
 			lambda res: asyncio.ensure_future(
 				self.interception_cat(res, cat)))
-		# await page.goto(f'https://lihkg.com/category/{cat}')
 		await page.goto(f'https://lihkg.com/category/{cat}',
 						{'waitUntil': 'networkidle2'})
 		await page.close()
