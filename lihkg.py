@@ -4,12 +4,10 @@ import asyncio
 import tempfile
 import platform
 import webbrowser
-from time import sleep
 from datetime import datetime
 
 from pyppeteer import launch
 from pyppeteer_stealth import stealth
-import nest_asyncio
 
 from textual.app import App, ComposeResult
 from textual.containers import Container
@@ -54,7 +52,6 @@ Rich can do a pretty *decent* job of rendering markdown.
 
 README = Markdown(MARKDOWN)
 TEMP_PATH = tempfile.TemporaryDirectory()
-nest_asyncio.apply()
 
 if platform.system() == 'Windows':
 	input('Set "MS Gothic" as your font in CMD [如果你看到這句文字就可以按enter繼續了]\n\n')
@@ -82,6 +79,9 @@ class LIHKGApp(App):
 
 	Post {
 		 margin: 1 0;
+		 width: 100%;
+		 align: left top;
+		 content-align: left top;
 	}
 
 	Button {
@@ -89,6 +89,8 @@ class LIHKGApp(App):
 		 width: 100%;
 		 height: auto;
 		 border: none;
+		 align: left top;
+		 content-align: left top;
 	}
 
 	#leftpanel {
@@ -111,10 +113,7 @@ class LIHKGApp(App):
 	def on_mount(self):
 		self.loaded_page = 0
 		self.total_page = 0
-		asyncio.get_event_loop().run_until_complete(
-			self.get_post_list())
-		for json_dict in self.data['response']['items']:
-			self.add_post(json_dict)
+		self.action_download_more_post()
 
 	def parse_post_response(self, json_dict):
 		a = re.compile(r'" data-sr-url=".*?">')
@@ -148,14 +147,13 @@ class LIHKGApp(App):
 		"""Event handler called when a button is pressed."""
 		button_id = event.button.id
 		self.thread_id = event.button.name
-		post_display = self.query_one("#post")
 		if button_id == "read":
 			self.loaded_page = 1
-			asyncio.get_event_loop().run_until_complete(
-				self.get_post_content(self.thread_id, self.loaded_page))
-			self.total_page = self.post_dict['response']['total_page']
-			self.post_md = self.parse_post_response(self.post_dict)
-			post_display.update(Markdown(self.post_md))
+			self.post_md = ''
+			self.total_page = 0
+			asyncio.create_task(
+				self.get_post_content(self.thread_id,
+									  self.loaded_page))
 
 	def compose(self) -> ComposeResult:
 		"""Called to add widgets to the app."""
@@ -178,21 +176,12 @@ class LIHKGApp(App):
 			self.post_md += f' Page {self.loaded_page} End'
 			self.post_md += '\n\n---\n\n'
 			self.loaded_page += 1
-			asyncio.get_event_loop().run_until_complete(
-				self.get_post_content(self.thread_id, self.loaded_page))
-			self.post_md += self.parse_post_response(self.post_dict)
-			self.query_one("#post").update(Markdown(self.post_md))
+			asyncio.create_task(
+				self.get_post_content(self.thread_id,
+									  self.loaded_page))
 
 	def action_download_more_post(self) -> None:
-		asyncio.get_event_loop().run_until_complete(
-			self.get_post_list())
-		if ('error_code' in self.data or
-				'error_message' in self.data):
-			self.query_one("#leftpanel").mount(
-				Static(self.data['error_message']))
-		else:
-			for json_dict in self.data['response']['items']:
-				self.add_post(json_dict)
+		asyncio.create_task(self.get_post_list())
 
 	def webbrowser_open_url(self, url):
 		webbrowser.open(url)
@@ -216,7 +205,14 @@ class LIHKGApp(App):
 						{'waitUntil': 'networkidle2'})
 		await page.close()
 		await browser.close()
-		await asyncio.sleep(5)
+		if ('error_code' in self.data or
+				'error_message' in self.data):
+			self.query_one("#leftpanel").mount(
+				Static(self.data['error_message']))
+		else:
+			for json_dict in self.data['response']['items']:
+				self.add_post(json_dict)
+		await asyncio.sleep(10)
 
 	async def interception_cat(self, response, cat):
 		# Response logic goes here
@@ -240,7 +236,11 @@ class LIHKGApp(App):
 						{'waitUntil': 'networkidle2'})
 		await page.close()
 		await browser.close()
-		await asyncio.sleep(5)
+		if self.loaded_page == 1:
+			self.total_page = self.post_dict['response']['total_page']
+		self.post_md += self.parse_post_response(self.post_dict)
+		self.query_one("#post").update(Markdown(self.post_md))
+		await asyncio.sleep(10)
 
 	async def interception_thread(self, response, thread_id, page_num):
 		# Response logic goes here
