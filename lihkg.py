@@ -79,6 +79,9 @@ class LIHKGApp(App):
 
 	Post {
 		 margin: 1 0;
+		 width: 100%;
+		 align: left top;
+		 content-align: left top;
 	}
 
 	Button {
@@ -86,6 +89,8 @@ class LIHKGApp(App):
 		 width: 100%;
 		 height: auto;
 		 border: none;
+		 align: left top;
+		 content-align: left top;
 	}
 
 	#leftpanel {
