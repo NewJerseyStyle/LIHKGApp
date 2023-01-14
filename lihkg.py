@@ -18,17 +18,12 @@ from rich.markdown import Markdown
 MARKDOWN = """
 # This is a Terminal App
 
-Rich can do a pretty *decent* job of rendering markdown.
-
 ## Knwon issues
-- Only threads in category 5 is showing
 - Image not showing in post
 - URLs in post cannot be clicked
 
 ## 求助養
-樓豬需要飼料，請餵食金錢，讓金錢的味道鞭策樓豬快手修補以上問題。
-
-捐助鏈接：
+樓豬需要飼料，請餵食。捐助鏈接：
 ```python
 '''
 	▄▄▄▄▄▄▄  ▄  ▄▄▄▄  ▄▄  ▄▄▄▄▄▄▄  
@@ -55,6 +50,50 @@ TEMP_PATH = tempfile.TemporaryDirectory()
 
 if platform.system() == 'Windows':
 	input('Set "MS Gothic" as your font in CMD [如果你看到這句文字就可以按enter繼續了]\n\n')
+
+class CategoryMenu(Static):
+	def compose(self) -> ComposeResult:
+		yield Button("吹水台", name="cat1")
+		yield Button("創意台", name="cat31")
+		yield Button("熱　門", name="cat2")
+		yield Button("講故台", name="cat12")
+		yield Button("最　新", name="cat3")
+		yield Button("學術台", name="cat18")
+		yield Button("時事台", name="cat5")
+		yield Button("World", name="cat38")
+		yield Button("政事台", name="cat33")
+		yield Button("財經台", name="cat15")
+		yield Button("娛樂台", name="cat7")
+		yield Button("房屋台", name="cat37")
+		yield Button("手機台", name="cat4")
+		yield Button("硬件台", name="cat22")
+		yield Button("Apps台", name="cat9")
+		yield Button("軟件台", name="cat26")
+		yield Button("電訊台", name="cat35")
+		yield Button("創意台", name="cat31")
+		yield Button("健康台", name="cat36")
+		yield Button("飲食台", name="cat16")
+		yield Button("感情台", name="cat30")
+		yield Button("旅遊台", name="cat17")
+		yield Button("上班台", name="cat14")
+		yield Button("活動台", name="cat27")
+		yield Button("校園台", name="cat19")
+		yield Button("體育台", name="cat6")
+		yield Button("學術台", name="cat18")
+		yield Button("講故台", name="cat12")
+		yield Button("遊戲台", name="cat10")
+		yield Button("影視台", name="cat11")
+		yield Button("動漫台", name="cat8")
+		yield Button("攝影台", name="cat23")
+		yield Button("音樂台", name="cat21")
+		yield Button("汽車台", name="cat20")
+		yield Button("寵物台", name="cat25")
+		yield Button("潮流台", name="cat13")
+		yield Button("玩具台", name="cat24")
+		yield Button("直播台", name="cat34")
+		yield Button("站務台", name="cat28")
+		yield Button("黑　洞", name="cat32")
+
 
 class Post(Static):
 	def __init__(self, data):
@@ -84,13 +123,18 @@ class LIHKGApp(App):
 		 content-align: left top;
 	}
 
-	Button {
+	Post Button {
 		 background: $boost;
 		 width: 100%;
 		 height: auto;
 		 border: none;
 		 align: left top;
 		 content-align: left top;
+	}
+
+	CategoryMenu {
+		 layout: grid;
+		 grid-size: 4 10;
 	}
 
 	#leftpanel {
@@ -100,12 +144,17 @@ class LIHKGApp(App):
 	#rightpanel {
 		 width: 70%;
 	}
+
+	.noshow {
+		visibility: hidden;
+		display: none;
+	}
 	'''
 
 	BINDINGS = [
 		("d", "toggle_dark", "Toggle dark mode"),
 		("q", "quit", "Quit LIHKGApp"),
-		# ("v", "view_full_screen", "View full page"),
+		("s", "switch_channel", "Switch Channel"),
 		("n", "download_next_page", "load Next page"),
 		("m", "download_more_post", "load More post"),
 	]
@@ -146,21 +195,27 @@ class LIHKGApp(App):
 	def on_button_pressed(self, event: Button.Pressed) -> None:
 		"""Event handler called when a button is pressed."""
 		button_id = event.button.id
-		self.thread_id = event.button.name
 		if button_id == "read":
+			self.thread_id = event.button.name
 			self.loaded_page = 1
 			self.post_md = ''
 			self.total_page = 0
 			asyncio.create_task(
 				self.get_post_content(self.thread_id,
 									  self.loaded_page))
+			self.query_one('CategoryMenu').add_class("noshow")
+		elif "cat" in event.button.name:
+			for post in self.query("Post"):
+				post.remove()
+			asyncio.create_task(self.get_post_list(
+				event.button.name[3:]))
 
 	def compose(self) -> ComposeResult:
 		"""Called to add widgets to the app."""
 		yield Header()
 		yield Footer()
 		yield Container(id="leftpanel")
-		yield Container(Static(README, id="post"), id="rightpanel")
+		yield Container(CategoryMenu(), Static(README, id="post"), id="rightpanel")
 
 	def add_post(self, json_dict) -> None:
 		"""An action to add a post."""
@@ -183,14 +238,13 @@ class LIHKGApp(App):
 	def action_download_more_post(self) -> None:
 		asyncio.create_task(self.get_post_list())
 
+	def action_switch_channel(self) -> None:
+		menu = self.query_one('CategoryMenu')
+		menu.remove_class("noshow")
+		menu.scroll_visible()
+
 	def webbrowser_open_url(self, url):
 		webbrowser.open(url)
-
-	# def on_container_mousescrolldown(self, message):
-	# 	post_display = self.query_one("#post")
-	# 	if (message.y - post_display.styles.height < self.styles.height
-	# 		and self.loaded_page < self.total_page):
-	# 		self.action_download_nextpage()
 
 	async def get_post_list(self, cat='5'):
 		browser = await launch(headless=True,
