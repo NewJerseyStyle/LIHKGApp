@@ -30,8 +30,6 @@ python setup.py bdist_wheel --universal
 ```
 
 ## Knwon issues
-- Only threads in category 5 is showing
-- Runs on single thread that UI freeze during network requests
 - Image not showing in post
 - URLs in post cannot be clicked
 

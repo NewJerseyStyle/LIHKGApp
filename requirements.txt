@@ -1,3 +1,2 @@
 pyppeteer
 pyppeteer-stealth
-nest-asyncio
