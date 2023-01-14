@@ -6,7 +6,7 @@
 ## 安裝
 > :warning: `Python >= 3.7` 需要
 ```bash
-pip install -U https://github.com/NewJerseyStyle/LIHKGApp/releases/latest/download/lihkg-0.2-py2.py3-none-any.whl
+pip install -U https://github.com/NewJerseyStyle/LIHKGApp/releases/latest/download/lihkg-0.4-py2.py3-none-any.whl
 ```
 
 ## 運行
