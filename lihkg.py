@@ -23,9 +23,7 @@ MARKDOWN = """
 - URLs in post cannot be clicked
 
 ## 求助養
-樓豬需要飼料，請餵食金錢，讓金錢的味道鞭策樓豬快手修補以上問題。
-
-捐助鏈接：
+樓豬需要飼料，請餵食。捐助鏈接：
 ```python
 '''
 	▄▄▄▄▄▄▄  ▄  ▄▄▄▄  ▄▄  ▄▄▄▄▄▄▄  
@@ -146,12 +144,17 @@ class LIHKGApp(App):
 	#rightpanel {
 		 width: 70%;
 	}
+
+	.noshow {
+		visibility: hidden;
+		display: none;
+	}
 	'''
 
 	BINDINGS = [
 		("d", "toggle_dark", "Toggle dark mode"),
 		("q", "quit", "Quit LIHKGApp"),
-		("c", "view_categories", "Switch Channel"),
+		("s", "switch_channel", "Switch Channel"),
 		("n", "download_next_page", "load Next page"),
 		("m", "download_more_post", "load More post"),
 	]
@@ -200,7 +203,10 @@ class LIHKGApp(App):
 			asyncio.create_task(
 				self.get_post_content(self.thread_id,
 									  self.loaded_page))
+			self.query_one('CategoryMenu').add_class("noshow")
 		elif "cat" in event.button.name:
+			for post in self.query("Post"):
+				post.remove()
 			asyncio.create_task(self.get_post_list(
 				event.button.name[3:]))
 
@@ -232,10 +238,10 @@ class LIHKGApp(App):
 	def action_download_more_post(self) -> None:
 		asyncio.create_task(self.get_post_list())
 
-	def action_view_categories(self) -> None:
-		self.query_one("#leftpanel").update(Static())
-		self.query_one("#rightpanel").update(
-			CategoryMenu(), Static(README, id="post"))
+	def action_switch_channel(self) -> None:
+		menu = self.query_one('CategoryMenu')
+		menu.remove_class("noshow")
+		menu.scroll_visible()
 
 	def webbrowser_open_url(self, url):
 		webbrowser.open(url)
@@ -249,7 +255,7 @@ class LIHKGApp(App):
 		page.on('response',
 			lambda res: asyncio.ensure_future(
 				self.interception_cat(res, cat)))
-		await page.goto(f'https://lihkg.com/{cat}',
+		await page.goto(f'https://lihkg.com/category/{cat}',
 						{'waitUntil': 'networkidle2'})
 		await page.close()
 		await browser.close()
